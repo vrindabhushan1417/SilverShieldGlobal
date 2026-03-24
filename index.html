@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SilverShield V3 Global</title>
-    <link rel="manifest" href="manifest.json">
+    <title>SilverShield V4 Global</title>
     <style>
-        :root { --primary: #0056b3; --danger: #d00000; --whatsapp: #25D366; --bg: #f4f7f9; }
+        :root { --primary: #0056b3; --danger: #d00000; --whatsapp: #25D366; --call: #3498db; --bg: #f4f7f9; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-header { background: var(--primary); color: white; width: 100%; padding: 15px 0; text-align: center; font-weight: bold; }
         #setup-zone, #app-zone { width: 92%; max-width: 400px; background: white; margin-top: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); box-sizing: border-box; }
@@ -16,17 +15,18 @@
         input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
         .btn { width: 100%; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; border: none; color: white; cursor: pointer; text-align: center; text-decoration: none; display: block; margin-top: 10px; }
         .save-btn { background: var(--primary); }
-        .wa-btn { background: var(--whatsapp); opacity: 0.5; pointer-events: none; }
-        #sos-btn { width: 180px; height: 180px; background: var(--danger); border-radius: 50%; border: 8px solid #ffccd5; color: white; font-size: 30px; font-weight: 900; margin: 20px auto; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
-        #status { text-align: center; font-weight: bold; color: #555; margin: 15px 0; min-height: 24px; }
-        .footer-ver { font-size: 10px; color: #ccc; margin-top: 20px; }
+        .contact-card { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .wa-btn { background: var(--whatsapp); opacity: 0.5; pointer-events: none; flex: 1; }
+        .call-btn { background: var(--call); flex: 1; text-align: center; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; }
+        #sos-btn { width: 180px; height: 180px; background: var(--danger); border-radius: 50%; border: 8px solid #ffccd5; color: white; font-size: 30px; font-weight: 900; margin: 20px auto; display: flex; align-items: center; justify-content: center; text-align: center; }
+        #status { text-align: center; font-weight: bold; color: #555; margin: 15px 0; }
     </style>
 </head>
 <body>
-    <header class="app-header">🛡️ SilverShield Global V3.0</header>
+    <header class="app-header">🛡️ SilverShield V4.0</header>
 
     <div id="setup-zone">
-        <h2 style="text-align:center">Circle of Care</h2>
+        <h2 style="text-align:center">Emergency Setup</h2>
         <div class="input-group"><label>CONTACT 1</label><input type="text" id="n1" placeholder="Name"><input type="tel" id="p1" placeholder="+65..."></div>
         <div class="input-group"><label>CONTACT 2</label><input type="text" id="n2" placeholder="Name"><input type="tel" id="p2" placeholder="+91..."></div>
         <div class="input-group"><label>CONTACT 3</label><input type="text" id="n3" placeholder="Name"><input type="tel" id="p3" placeholder="+65..."></div>
@@ -34,16 +34,15 @@
     </div>
 
     <div id="app-zone" style="display:none">
-        <div id="sos-btn" onclick="getGPS()">HELP<br>救命</div>
-        <div id="status">Ready</div>
+        <div id="sos-btn" onclick="getGPS()">HELP</div>
+        <div id="status">Tap HELP to find Location</div>
         <div id="contact-list"></div>
-        <a href="javascript:void(0)" onclick="localStorage.clear();location.reload();" style="color:#bbb; font-size:12px; margin-top:20px; display:block; text-align:center;">Reset App</a>
+        <a href="javascript:void(0)" onclick="localStorage.clear();location.reload();" style="color:#bbb; font-size:12px; margin-top:30px; display:block; text-align:center;">Reset Contacts</a>
     </div>
-    <div class="footer-ver">Build: 3.0.Global.WA</div>
 
     <script>
         window.onload = function() {
-            const saved = localStorage.getItem('ss_v3_final');
+            const saved = localStorage.getItem('ss_v4_data');
             if(saved) renderApp(JSON.parse(saved));
         };
 
@@ -52,10 +51,10 @@
             for(let i=1; i<=3; i++) {
                 const name = document.getElementById('n'+i).value;
                 const phone = document.getElementById('p'+i).value.replace(/\s/g, '');
-                if(phone.length > 5) c.push({name: name || "Family "+i, phone: phone});
+                if(phone.length > 5) c.push({name: name || "Contact "+i, phone: phone});
             }
-            if(c.length === 0) return alert("Please enter at least one number.");
-            localStorage.setItem('ss_v3_final', JSON.stringify(c));
+            if(c.length === 0) return alert("Add at least one number!");
+            localStorage.setItem('ss_v4_data', JSON.stringify(c));
             renderApp(c);
         }
 
@@ -65,38 +64,37 @@
             const list = document.getElementById('contact-list');
             list.innerHTML = "";
             contacts.forEach(c => {
-                const a = document.createElement('a');
-                a.className = 'btn wa-btn';
-                a.id = 'btn-' + c.phone.replace(/\+/g, '');
-                a.innerHTML = '💬 Alert ' + c.name;
-                list.appendChild(a);
+                const card = document.createElement('div');
+                card.className = 'contact-card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:#333;">${c.name}</div>
+                    <div style="display:flex; gap:10px;">
+                        <a href="tel:${c.phone}" class="call-btn">📞 CALL NOW</a>
+                        <a id="wa-${c.phone.replace(/\+/g, '')}" class="btn wa-btn" style="margin-top:0; padding:12px; font-size:14px;">💬 WHATSAPP</a>
+                    </div>
+                `;
+                list.appendChild(card);
             });
         }
 
         function getGPS() {
             document.getElementById('status').innerText = "📍 Searching for GPS...";
-            document.getElementById('status').style.color = "orange";
-            
             navigator.geolocation.getCurrentPosition(p => {
-                const lat = p.coords.latitude;
-                const lon = p.coords.longitude;
-                const mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
+                const mapUrl = "https://www.google.com/maps?q=" + p.coords.latitude + "," + p.coords.longitude;
                 const msg = encodeURIComponent("🚨 EMERGENCY! I need help. My location: " + mapUrl);
-                const contacts = JSON.parse(localStorage.getItem('ss_v3_final'));
-                
+                const contacts = JSON.parse(localStorage.getItem('ss_v4_data'));
                 contacts.forEach(c => {
-                    const btn = document.getElementById('btn-' + c.phone.replace(/\+/g, ''));
+                    const btn = document.getElementById('wa-' + c.phone.replace(/\+/g, ''));
                     btn.href = "https://wa.me/" + c.phone.replace(/\+/g, '') + "?text=" + msg;
                     btn.style.opacity = "1";
                     btn.style.pointerEvents = "auto";
                 });
-                document.getElementById('status').innerText = "✅ Location Found! Tap a Name:";
+                document.getElementById('status').innerText = "✅ Location Ready!";
                 document.getElementById('status').style.color = "green";
             }, err => {
-                document.getElementById('status').innerText = "❌ GPS Error. Please check Permissions.";
-                document.getElementById('status').style.color = "red";
-                alert("GPS Error: Please ensure Location is ON in phone settings.");
-            }, {enableHighAccuracy: true, timeout: 10000});
+                alert("Please enable GPS/Location in settings!");
+                document.getElementById('status').innerText = "❌ GPS Error";
+            }, {enableHighAccuracy: true});
         }
     </script>
 </body>
