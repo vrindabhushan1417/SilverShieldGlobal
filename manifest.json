@@ -1,20 +1,18 @@
 
 {
-  "name": "SilverShield Global V3",
-  "short_name": "Shield V3",
-  "description": "Global SOS application for seniors. Send WhatsApp alerts with GPS location to family worldwide.",
-  "id": "com.silvershield.v3.global",
+  "name": "SilverShield V4 Global",
+  "short_name": "Shield V4",
+  "description": "Emergency SOS application for seniors. Send WhatsApp alerts with live GPS location and make direct calls.",
+  "id": "com.bhushan.ss.v4.final",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0056b3",
   "theme_color": "#0056b3",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/1063/1063073.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
